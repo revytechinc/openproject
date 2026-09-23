@@ -54,15 +54,18 @@ module Journals
     end
 
     def call(notes: "", internal: false, cause: CauseOfChange::NoCause.new)
-      Journal.transaction do
+      journal = nil
+
+      Journal.transaction do |transaction|
         journal = create_journal(notes, internal, cause)
 
         if journal
           reload_journals
+          transaction.after_commit { broadcast_work_package_live_update(journal) }
         end
-
-        ServiceResult.success result: journal
       end
+
+      ServiceResult.success result: journal
     end
 
     private
@@ -579,6 +582,12 @@ module Journals
     # the caller might expect the journals to also be updated so we do it for him.
     def reload_journals
       journable.journals.reload if journable.journals.loaded?
+    end
+
+    def broadcast_work_package_live_update(journal)
+      WorkPackages::LiveUpdateBroadcaster.call(journal)
+    rescue StandardError => e
+      OpenProject.logger.error("Work package live update broadcast failed: #{e.class}: #{e.message}")
     end
 
     def aggregatable?(predecessor, notes, internal, cause)

@@ -18,7 +18,7 @@ This is separate from MCP seat notifications.
 - `project_id` — project list, only if the user has `view_work_packages` on that project
 - `visible_projects` — global list, one stream per project that user can view work packages in
 
-Journals for work packages call `WorkPackages::LiveUpdateBroadcaster` after commit. The initial create snapshot is not broadcast unless it includes a comment. A broadcast failure is logged and does not fail the save.
+Work package journals are inserted by `Journals::CreateService` with SQL, so an ActiveRecord `after_commit` on `Journal` does not run. When that SQL returns a journal (a new row, or an aggregated rewrite of the previous one), the service registers `transaction.after_commit`. That callback calls `WorkPackages::LiveUpdateBroadcaster` after the outermost database transaction commits. The initial create snapshot is not broadcast unless it includes a comment. A broadcast failure is logged and does not fail the save.
 
 ## Redis
 
