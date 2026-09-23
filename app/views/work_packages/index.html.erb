@@ -40,7 +40,13 @@ See COPYRIGHT and LICENSE files for more details.
 <% end %>
 
 <% content_for :content_body do %>
-  <%= angular_component_tag "opce-work-packages-view" %>
+  <% live_updates_data = { controller: "work-packages--live-updates" } %>
+  <% if project %>
+    <% live_updates_data[:work_packages__live_updates_project_id_value] = project.id %>
+  <% else %>
+    <% live_updates_data[:work_packages__live_updates_visible_projects_value] = true %>
+  <% end %>
+  <%= angular_component_tag "opce-work-packages-view", data: live_updates_data %>
 <% end %>
 
 <% content_for :content_body_right do %>

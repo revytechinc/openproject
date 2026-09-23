@@ -43,6 +43,8 @@ Rails.application.routes.draw do
   get "/health_checks/all" => "ok_computer/ok_computer#show", check: "full"
   mount OkComputer::Engine, at: "/health_checks"
 
+  mount ActionCable.server => "/cable"
+
   get "/api/docs" => "api_docs#index"
 
   mount API::Mcp => "/mcp"

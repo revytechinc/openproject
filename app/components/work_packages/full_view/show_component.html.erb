@@ -8,6 +8,10 @@
     end
   else
     helpers.angular_component_tag "opce-wp-full-view",
+                                  data: {
+                                    controller: "work-packages--live-updates",
+                                    work_packages__live_updates_work_package_id_value: @work_package.id
+                                  },
                                   inputs: {
                                     workPackageId: @id,
                                     activeTab: @tab,

@@ -136,6 +136,29 @@ describe('Activities tab polling controller', () => {
     expect(request).toHaveBeenCalledTimes(1);
   });
 
+  describe('live updates', () => {
+    it('pulls activities immediately for the open work package and keeps polling', async () => {
+      await renderPolling();
+      resolveContext(pluginContext());
+      await vi.advanceTimersByTimeAsync(0);
+
+      document.dispatchEvent(new CustomEvent('work-package-live-update', {
+        detail: { workPackageId: 1 },
+      }));
+      await vi.advanceTimersByTimeAsync(0);
+      expect(request).toHaveBeenCalledTimes(1);
+
+      document.dispatchEvent(new CustomEvent('work-package-live-update', {
+        detail: { workPackageId: 99 },
+      }));
+      await vi.advanceTimersByTimeAsync(0);
+      expect(request).toHaveBeenCalledTimes(1);
+
+      await vi.advanceTimersByTimeAsync(10000);
+      expect(request).toHaveBeenCalledTimes(2);
+    });
+  });
+
   describe('circuit breaker', () => {
     it('halts polling after a not-found poll response', async () => {
       await renderPolling();
