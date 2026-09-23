@@ -216,6 +216,8 @@ module OpenProject
 
     config.action_controller.asset_host = OpenProject::Configuration::AssetHost.value
 
+    config.action_cable.mount_path = nil
+
     # Remove X-XSS-Protection header
     config.action_dispatch.default_headers.delete "X-XSS-Protection"
 

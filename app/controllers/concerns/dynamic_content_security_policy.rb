@@ -33,6 +33,7 @@ module DynamicContentSecurityPolicy
 
   included do
     before_action :add_hocuspocus_host_to_csp
+    before_action :add_action_cable_origin_to_csp
   end
 
   ##
@@ -55,6 +56,11 @@ module DynamicContentSecurityPolicy
   end
 
   private
+
+  def add_action_cable_origin_to_csp
+    scheme = request.ssl? ? "wss" : "ws"
+    append_content_security_policy_directives(connect_src: ["#{scheme}://#{request.host_with_port}"])
+  end
 
   def add_hocuspocus_host_to_csp
     hocuspocus_url = Setting.collaborative_editing_hocuspocus_url

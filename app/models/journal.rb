@@ -36,6 +36,7 @@ class Journal < ApplicationRecord
   include ::JournalFormatter
   include ::Acts::Journalized::FormatHooks
   include Journal::Timestamps
+  include Journal::WorkPackageLiveUpdates
   include Reactable
 
   # Inline attachments for Journal#notes aka comments

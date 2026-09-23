@@ -75,6 +75,20 @@ RSpec.describe "" do
       expect(csp["font-src"].count("'self'")).to eq(1)
     end
 
+    it "allows the page-origin websocket in connect-src" do
+      get "/"
+
+      csp = parse_csp(last_response.headers["Content-Security-Policy"])
+      expect(csp["connect-src"]).to include("ws://test.host")
+    end
+
+    it "allows wss when the request is https" do
+      get "/", headers: { "X-Forwarded-Proto" => "https" }
+
+      csp = parse_csp(last_response.headers["Content-Security-Policy"])
+      expect(csp["connect-src"]).to include("wss://test.host")
+    end
+
     it "includes 'self' in img-src CSP directive" do
       get "/"
 

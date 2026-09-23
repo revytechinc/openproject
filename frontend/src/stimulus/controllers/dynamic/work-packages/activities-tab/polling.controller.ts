@@ -172,16 +172,25 @@ export default class PollingController extends BaseController {
     const handlers = {
       workPackageUpdated: () => { void this.handleWorkPackageUpdate(); },
       workPackageNotificationsUpdated: () => { void this.handleWorkPackageUpdate(); },
+      workPackageLiveUpdate: (event:Event) => { void this.handleWorkPackageLiveUpdate(event); },
       visibilityChange: () => { void this.handleVisibilityChange(); },
     };
 
     document.addEventListener('work-package-updated', handlers.workPackageUpdated, { signal });
     document.addEventListener('work-package-notifications-updated', handlers.workPackageNotificationsUpdated, { signal });
+    document.addEventListener('work-package-live-update', handlers.workPackageLiveUpdate, { signal });
     document.addEventListener('visibilitychange', handlers.visibilityChange, { signal });
   }
 
   private removeEventListeners() {
     this.abortController.abort();
+  }
+
+  private handleWorkPackageLiveUpdate(event:Event) {
+    const detail = (event as CustomEvent<{ workPackageId?:number }>).detail;
+    if (detail?.workPackageId !== this.indexOutlet.workPackageIdValue) return;
+
+    void this.updateActivitiesList();
   }
 
   private handleVisibilityChange() {
