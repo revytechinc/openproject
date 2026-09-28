@@ -57,6 +57,7 @@ RSpec.describe Activities::Fetcher, "eager loading of bcf_comment" do # rubocop:
 
     it "returns the events without eager loading bcf_comment" do
       expect(events.map { it.journal.journable }).to include(work_package)
+      expect(included_associations).to include(:data)
       expect(included_associations).not_to include(:bcf_comment)
     end
   end

@@ -64,6 +64,7 @@ RSpec.describe API::V3::Activities::ActivitiesByWorkPackageAPI, "eager loading o
     it "succeeds without eager loading bcf_comment" do
       expect(last_response).to have_http_status :ok
       expect(JSON.parse(last_response.body).dig("_embedded", "elements")).not_to be_empty
+      expect(included_associations).to include(:data)
       expect(included_associations).not_to include(:bcf_comment)
     end
   end
