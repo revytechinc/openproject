@@ -42,14 +42,14 @@ module API
           get do
             self_link = api_v3_paths.work_package_activities @work_package.id
 
+            eager_loaded = %i[data customizable_journals attachable_journals storable_journals]
+            # Journal#bcf_comment is only defined when the BIM module is loaded.
+            eager_loaded << :bcf_comment if ::Journal.reflect_on_association(:bcf_comment)
+
             journals = @work_package
               .journals
               .internal_visible
-              .includes(:data,
-                        :customizable_journals,
-                        :attachable_journals,
-                        :storable_journals,
-                        :bcf_comment)
+              .includes(*eager_loaded)
 
             Activities::ActivityCollectionRepresenter.new(journals,
                                                           self_link:,

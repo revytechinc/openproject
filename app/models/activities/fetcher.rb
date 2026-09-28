@@ -123,8 +123,12 @@ module Activities
     def journals_of_event_set(events)
       journal_ids = events.map(&:event_id)
 
+      eager_loaded = %i[data customizable_journals attachable_journals target_version_journals]
+      # Journal#bcf_comment is only defined when the BIM module is loaded.
+      eager_loaded << :bcf_comment if Journal.reflect_on_association(:bcf_comment)
+
       Journal
-        .includes(:data, :customizable_journals, :attachable_journals, :target_version_journals, :bcf_comment)
+        .includes(*eager_loaded)
         .find(journal_ids)
         .then { |journals| ::API::V3::Activities::ActivityEagerLoadingWrapper.wrap(journals) }
         .index_by(&:id)
