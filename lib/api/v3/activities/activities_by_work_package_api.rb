@@ -50,7 +50,7 @@ module API
                         :customizable_journals,
                         :attachable_journals,
                         :storable_journals,
-                        :bcf_comment)
+                        *::Journal.optional_module_includes)
 
             Activities::ActivityCollectionRepresenter.new(journals,
                                                           self_link:,

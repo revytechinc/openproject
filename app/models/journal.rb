@@ -162,6 +162,13 @@ class Journal < ApplicationRecord
 
   alias_attribute :internal, :restricted
 
+  # Eager loads for associations that only exist when an optional module is
+  # loaded. Journal#bcf_comment is added by the BIM module's JournalPatch in
+  # to_prepare, so this is evaluated per call and never memoized.
+  def self.optional_module_includes
+    reflect_on_association(:bcf_comment) ? %i[bcf_comment] : []
+  end
+
   # In conjunction with the included Comparable module, allows comparison of journal records
   # based on their corresponding version numbers, creation timestamps and IDs.
   def <=>(other)

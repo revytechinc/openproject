@@ -68,7 +68,7 @@ module McpTools
                     :customizable_journals,
                     :attachable_journals,
                     :storable_journals,
-                    :bcf_comment)
+                    *::Journal.optional_module_includes)
           .where.not(notes: "")
           .order(created_at: :desc)
       )
